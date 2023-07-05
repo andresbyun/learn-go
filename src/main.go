@@ -10,7 +10,6 @@ func main() {
 	Height := 400
 	Width := 400
 
-	output := util.Img{Width: Width, Height: Height, Name: "test"}
-
+	output := util.Img{Width: Width, Height: Height, Name: "test.png"}
 	output.GenerateImage()
 }

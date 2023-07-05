@@ -14,29 +14,29 @@ type Img struct {
 	Name          string
 }
 
-func (out Img) GenerateImage() {
+func (this Img) GenerateImage() {
 	topLeft := image.Point{0, 0}
-	bottomRight := image.Point{out.Width, out.Height}
-	output := image.NewRGBA(image.Rectangle{topLeft, bottomRight})
+	bottomRight := image.Point{this.Width, this.Height}
+	outputImg := image.NewRGBA(image.Rectangle{topLeft, bottomRight})
 
 	// Set color for each pixel.
-	for x := 0; x < out.Width; x++ {
-		for y := 0; y < out.Height; y++ {
+	for x := 0; x < this.Width; x++ {
+		for y := 0; y < this.Height; y++ {
 			// TODO: Convert values in matrix to color
-			output.Set(x, y, color.White)
+			outputImg.Set(x, y, color.White)
 		}
 	}
 
-	// Change directory to outside src
-	os.Chdir("..")
+	// Change directory to output directory
+	os.Chdir("../output")
 
-	if !strings.HasSuffix(out.Name, ".png") {
-		out.Name += ".png"
+	if !strings.HasSuffix(this.Name, ".png") {
+		this.Name += ".png"
 	}
-	filename := out.Name
+	filename := this.Name
 
 	// Generate the image
-	f, _ := os.Create(out.Name)
-	png.Encode(f, output)
+	f, _ := os.Create(this.Name)
+	png.Encode(f, outputImg)
 	fmt.Println("Created image: " + filename)
 }
