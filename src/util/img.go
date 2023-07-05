@@ -47,13 +47,35 @@ func (this Img) GenerateImage() {
 
 // Function to raytrace
 func (this Img) raytrace() [][]linAlgebra.Vec3 {
+	// Variables
+	aspectRatio := this.Width / this.Height
+	viewportHeight := float64(2.0)
+	viewportWidth := float64(aspectRatio) * viewportHeight
+	focalLength := 1.0
+
+	origin := linAlgebra.Vec3{X: 0, Y: 0, Z: 0}
+	horizontal := linAlgebra.Vec3{X: viewportWidth, Y: 0, Z: 0}
+	vertical := linAlgebra.Vec3{X: 0, Y: viewportHeight, Z: 0}
+
+	// TODO: Rewrite this so it's actually behaving the way it's supposed to
+	lowerLeft := ((origin.Sub(horizontal.Div(2))).Sub(vertical.Div(2))).Sub(linAlgebra.Vec3{X: 0, Y: 0, Z: focalLength})
+
 	// Initialize the 2D array that'll contain the image values
 	imgMat := make([][]linAlgebra.Vec3, this.Height)
 	for i := 0; i < this.Height; i++ {
 		imgMat[i] = make([]linAlgebra.Vec3, this.Width)
-		// Fill the background with white
+
 		for j := 0; j < this.Width; j++ {
-			imgMat[i][j] = linAlgebra.Vec3{X: 1, Y: 1, Z: 1}
+			u := float64(j) / float64(this.Width-1)
+			uVec := horizontal.Mult(u)
+
+			v := float64(i) / float64(this.Height-1)
+			vVec := vertical.Mult(v)
+
+			temp := (uVec.Add(vVec)).Add(lowerLeft)
+			r := Ray{Orig: origin, Dir: temp}
+
+			imgMat[i][j] = r.getColor()
 		}
 	}
 

@@ -21,9 +21,9 @@ func (a Vec3) Add(b Vec3) Vec3 {
 // subtract vector b to vector a (i.e. a - b)
 func (a Vec3) Sub(b Vec3) Vec3 {
 	return Vec3{
-		a.X + b.X,
-		a.Y + b.Y,
-		a.Z + b.Z,
+		a.X - b.X,
+		a.Y - b.Y,
+		a.Z - b.Z,
 	}
 }
 
