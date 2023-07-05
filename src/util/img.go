@@ -15,7 +15,10 @@ type Img struct {
 	Name          string
 }
 
-func (this Img) GenerateImage(colorMat [][]linAlgebra.Vec3) {
+// Function that creates the output image
+func (this Img) GenerateImage() {
+	colorMat := this.raytrace()
+
 	topLeft := image.Point{0, 0}
 	bottomRight := image.Point{this.Width, this.Height}
 	outputImg := image.NewRGBA(image.Rectangle{topLeft, bottomRight})
@@ -40,6 +43,21 @@ func (this Img) GenerateImage(colorMat [][]linAlgebra.Vec3) {
 	f, _ := os.Create(this.Name)
 	png.Encode(f, outputImg)
 	fmt.Println("Created image: " + filename)
+}
+
+// Function to raytrace
+func (this Img) raytrace() [][]linAlgebra.Vec3 {
+	// Initialize the 2D array that'll contain the image values
+	imgMat := make([][]linAlgebra.Vec3, this.Height)
+	for i := 0; i < this.Height; i++ {
+		imgMat[i] = make([]linAlgebra.Vec3, this.Width)
+		// Fill the background with white
+		for j := 0; j < this.Width; j++ {
+			imgMat[i][j] = linAlgebra.Vec3{X: 1, Y: 1, Z: 1}
+		}
+	}
+
+	return imgMat
 }
 
 // Convert Vec3 to RGBA
