@@ -25,7 +25,7 @@ func (this Img) GenerateImage(colorMat [][]linAlgebra.Vec3) {
 	for i := 0; i < this.Height; i++ {
 		for j := 0; j < this.Width; j++ {
 			curr := Vec3ToRGBA(colorMat[i][j])
-			outputImg.Set(j, i, curr)
+			outputImg.Set(j, (this.Height-1)-i, curr)
 		}
 	}
 
