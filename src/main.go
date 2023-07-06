@@ -25,7 +25,17 @@ func main() {
 	vertical := linAlgebra.Vec3{X: 0, Y: viewportHeight, Z: 0}
 	lowerLeft := ((origin.Sub(horizontal.Div(2))).Sub(vertical.Div(2))).Sub(linAlgebra.Vec3{X: 0, Y: 0, Z: focalLength})
 
-	sphereCollection := randomizeSpheres(viewportWidth, viewportHeight)
+	// worldCollection
+	test := []worldObj.WorldObj{}
+
+	// Add a black sphere in the center
+	black := linAlgebra.Vec3{X: 0, Y: 0, Z: 0}
+	radius := 0.25
+	pos := linAlgebra.Vec3{X: 0, Y: 0, Z: -1}
+	test = append(test, worldObj.Sphere{Position: pos, Color: black, Radius: radius})
+
+	// Add randomized spheres
+	randomizeSpheres(viewportWidth, viewportHeight, &test, 5)
 
 	// Initialize the 2D array that'll contain the image values
 	imgMat := make([][]linAlgebra.Vec3, Height)
@@ -42,7 +52,7 @@ func main() {
 			direction := (uVec.Add(vVec)).Add(lowerLeft)
 			r := util.Ray{Orig: origin, Dir: direction}
 
-			imgMat[i][j] = getColor(r, sphereCollection[:])
+			imgMat[i][j] = getColor(r, test)
 		}
 	}
 
@@ -52,24 +62,13 @@ func main() {
 }
 
 // Get the color of the ray
-func getColor(r util.Ray, sphereCollection []worldObj.Sphere) linAlgebra.Vec3 {
+func getColor(r util.Ray, world []worldObj.WorldObj) linAlgebra.Vec3 {
 	// TEST multiple spheres
-	for i := 0; i < len(sphereCollection); i++ {
-		if sphereCollection[i].HitIntersect(r) {
-			return sphereCollection[i].GetColor()
+	for i := 0; i < len(world); i++ {
+		if world[i].HitIntersect(r) {
+			return world[i].GetColor()
 		}
 	}
-
-	// TEST hit with a black sphere at {X:0, Y:0, Z:-1} with radius 0.5
-	black := linAlgebra.Vec3{X: 0, Y: 0, Z: 0}
-	radius := 0.5
-	pos := linAlgebra.Vec3{X: 0, Y: 0, Z: -1}
-
-	testSphere := worldObj.Sphere{Position: pos, Color: black, Radius: radius}
-	if testSphere.HitIntersect(r) {
-		return testSphere.GetColor()
-	}
-	// END TEST
 
 	unitVec := r.Dir.Normalize()
 	t := 0.5 * (unitVec.Y + 1.0)
@@ -80,11 +79,9 @@ func getColor(r util.Ray, sphereCollection []worldObj.Sphere) linAlgebra.Vec3 {
 	return lerpWhite.Add(lerpBlue)
 }
 
-// Create an array of 5 randomized spheres
-func randomizeSpheres(width float64, height float64) []worldObj.Sphere {
-	randSp := [5]worldObj.Sphere{}
-
-	for i := 0; i < len(randSp); i++ {
+// Create an array of n amount of randomized spheres
+func randomizeSpheres(width float64, height float64, world *[]worldObj.WorldObj, amount uint8) {
+	for i := 0; i < int(amount); i++ {
 		radius := rand.Float64() * 0.4 // radius of range [0.0, 0.4)
 
 		color := linAlgebra.Vec3{X: rand.Float64(), Y: rand.Float64(), Z: rand.Float64()}
@@ -94,7 +91,7 @@ func randomizeSpheres(width float64, height float64) []worldObj.Sphere {
 			Z: float64(-1),
 		}
 
-		randSp[i] = worldObj.Sphere{Position: pos, Color: color, Radius: radius}
+		randSp := worldObj.Sphere{Position: pos, Color: color, Radius: radius}
+		*world = append(*world, randSp)
 	}
-	return randSp[:]
 }
